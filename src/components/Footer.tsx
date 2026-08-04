@@ -18,6 +18,17 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPrivacy, onOpenModal }) =>
             AI 驱动的外贸拓客引擎 · FB/INS 自动化询盘解决方案 · 助推中国制造通达全球
           </p>
 
+          {/* Contact Details Bar */}
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono bg-slate-800/80 border border-slate-700/60 px-5 py-2.5 rounded-2xl text-slate-300">
+            <span>📞 热线: <strong className="text-white">13367266284</strong></span>
+            <span className="text-slate-600">|</span>
+            <span>💬 WA: <strong className="text-emerald-400">13367266284</strong></span>
+            <span className="text-slate-600">|</span>
+            <span>✈️ TG: <strong className="text-sky-400">@dzt251204</strong></span>
+            <span className="text-slate-600">|</span>
+            <span>微信: <strong className="text-purple-300">心想柿橙 🍊</strong></span>
+          </div>
+
           <div className="flex items-center gap-6 text-xs text-slate-400 font-medium pt-2">
             <a href="#features" className="hover:text-white transition-colors">方案特色</a>
             <a href="#workflow" className="hover:text-white transition-colors">获客原理</a>

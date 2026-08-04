@@ -9,6 +9,7 @@ import { LeadModal } from './components/LeadModal';
 import { LeadsAdminDrawer } from './components/LeadsAdminDrawer';
 import { AdminAuthModal } from './components/AdminAuthModal';
 import { PrivacyModal } from './components/PrivacyModal';
+import { ContactSidebar } from './components/ContactSidebar';
 import { Footer } from './components/Footer';
 import { INITIAL_LEADS } from './data/mockData';
 import { BusinessType, LeadSubmission } from './types';
@@ -17,6 +18,7 @@ export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLeadsPortalOpen, setIsLeadsPortalOpen] = useState(false);
   const [isAdminAuthOpen, setIsAdminAuthOpen] = useState(false);
+  const [isAdminAuthed, setIsAdminAuthed] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
   // Prefill state from ROI calculator
@@ -53,8 +55,7 @@ export default function App() {
   };
 
   const handleOpenLeadsPortalClick = () => {
-    const isAuthed = sessionStorage.getItem('kefanfan_admin_authed') === 'true';
-    if (isAuthed) {
+    if (isAdminAuthed) {
       setIsLeadsPortalOpen(true);
     } else {
       setIsAdminAuthOpen(true);
@@ -62,8 +63,14 @@ export default function App() {
   };
 
   const handleAdminAuthSuccess = () => {
+    setIsAdminAuthed(true);
     setIsAdminAuthOpen(false);
     setIsLeadsPortalOpen(true);
+  };
+
+  const handleCloseLeadsPortal = () => {
+    setIsLeadsPortalOpen(false);
+    setIsAdminAuthed(false); // Lock it back immediately!
   };
 
   const handleApplyRoiPreset = (businessType: BusinessType, industry: string) => {
@@ -138,8 +145,8 @@ export default function App() {
       />
 
       <LeadsAdminDrawer
-        isOpen={isLeadsPortalOpen}
-        onClose={() => setIsLeadsPortalOpen(false)}
+        isOpen={isLeadsPortalOpen && isAdminAuthed}
+        onClose={handleCloseLeadsPortal}
         leads={leads}
         onUpdateLead={handleUpdateLead}
         onAddLead={(newLead) => setLeads((prev) => [newLead, ...prev])}
@@ -156,6 +163,9 @@ export default function App() {
         isOpen={isPrivacyOpen}
         onClose={() => setIsPrivacyOpen(false)}
       />
+
+      {/* Floating Contact Sidebar */}
+      <ContactSidebar />
     </div>
   );
 }
