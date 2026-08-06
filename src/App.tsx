@@ -9,8 +9,7 @@ import { CaseStudies } from './components/CaseStudies';
 import { CompetitorComparison } from './components/CompetitorComparison';
 import { AiDiagnosticTool } from './components/AiDiagnosticTool';
 import { LeadModal } from './components/LeadModal';
-import { LeadsAdminDrawer } from './components/LeadsAdminDrawer';
-import { AdminAuthModal } from './components/AdminAuthModal';
+import { AdminPortal } from './components/AdminPortal';
 import { PrivacyModal } from './components/PrivacyModal';
 import { ContactSidebar } from './components/ContactSidebar';
 import { Footer } from './components/Footer';
@@ -18,10 +17,18 @@ import { INITIAL_LEADS } from './data/mockData';
 import { BusinessType, LeadSubmission } from './types';
 
 export default function App() {
+  // Page view routing state: 'landing' or 'admin'
+  const [currentView, setCurrentView] = useState<'landing' | 'admin'>(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get('view') === 'admin' || window.location.hash === '#admin') {
+        return 'admin';
+      }
+    }
+    return 'landing';
+  });
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLeadsPortalOpen, setIsLeadsPortalOpen] = useState(false);
-  const [isAdminAuthOpen, setIsAdminAuthOpen] = useState(false);
-  const [isAdminAuthed, setIsAdminAuthed] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
   // Prefill state from ROI calculator
@@ -31,7 +38,7 @@ export default function App() {
   // Leads list stored in localStorage
   const [leads, setLeads] = useState<LeadSubmission[]>(() => {
     try {
-      const saved = localStorage.getItem('kefanfan_leads_v1');
+      const saved = localStorage.getItem('kefanfan_leads_v2');
       if (saved) {
         return JSON.parse(saved);
       }
@@ -43,7 +50,7 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('kefanfan_leads_v1', JSON.stringify(leads));
+      localStorage.setItem('kefanfan_leads_v2', JSON.stringify(leads));
     } catch (e) {
       // ignore
     }
@@ -57,23 +64,18 @@ export default function App() {
     setIsModalOpen(false);
   };
 
-  const handleOpenLeadsPortalClick = () => {
-    if (isAdminAuthed) {
-      setIsLeadsPortalOpen(true);
-    } else {
-      setIsAdminAuthOpen(true);
+  const handleNavigateToAdmin = () => {
+    setCurrentView('admin');
+    if (typeof window !== 'undefined') {
+      window.history.pushState({}, '', '?view=admin');
     }
   };
 
-  const handleAdminAuthSuccess = () => {
-    setIsAdminAuthed(true);
-    setIsAdminAuthOpen(false);
-    setIsLeadsPortalOpen(true);
-  };
-
-  const handleCloseLeadsPortal = () => {
-    setIsLeadsPortalOpen(false);
-    setIsAdminAuthed(false); // Lock it back immediately!
+  const handleNavigateToLanding = () => {
+    setCurrentView('landing');
+    if (typeof window !== 'undefined') {
+      window.history.pushState({}, '', window.location.pathname);
+    }
   };
 
   const handleApplyRoiPreset = (businessType: BusinessType, industry: string) => {
@@ -82,18 +84,22 @@ export default function App() {
     setIsModalOpen(true);
   };
 
-  // Live notification toast state for lead submission linkage
-  const [lastSubmittedLead, setLastSubmittedLead] = useState<LeadSubmission | null>(null);
-  const [showSyncToast, setShowSyncToast] = useState(false);
-
   const handleSubmitSuccess = (newLead: LeadSubmission) => {
     setLeads((prev) => [newLead, ...prev]);
-    setLastSubmittedLead(newLead);
-    setShowSyncToast(true);
   };
 
   const handleUpdateLead = (updatedLead: LeadSubmission) => {
     setLeads((prev) => prev.map((l) => (l.id === updatedLead.id ? updatedLead : l)));
+  };
+
+  const handleBatchUpdateLeads = (updatedLeads: LeadSubmission[]) => {
+    const updateMap = new Map(updatedLeads.map((l) => [l.id, l]));
+    setLeads((prev) => prev.map((l) => updateMap.get(l.id) || l));
+  };
+
+  const handleBatchDeleteLeads = (idsToDelete: string[]) => {
+    const deleteSet = new Set(idsToDelete);
+    setLeads((prev) => prev.filter((l) => !deleteSet.has(l.id)));
   };
 
   const handleClearLeads = () => {
@@ -107,12 +113,27 @@ export default function App() {
     }
   };
 
+  // If in full-screen Admin Portal View
+  if (currentView === 'admin') {
+    return (
+      <AdminPortal
+        onReturnToLanding={handleNavigateToLanding}
+        leads={leads}
+        onUpdateLead={handleUpdateLead}
+        onBatchUpdateLeads={handleBatchUpdateLeads}
+        onBatchDeleteLeads={handleBatchDeleteLeads}
+        onAddLead={(newLead) => setLeads((prev) => [newLead, ...prev])}
+        onClearLeads={handleClearLeads}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased selection:bg-blue-100 selection:text-blue-900">
       {/* Header */}
       <Header
         onOpenModal={handleOpenModal}
-        onOpenLeadsPortal={handleOpenLeadsPortalClick}
+        onOpenLeadsPortal={handleNavigateToAdmin}
         leadCount={leads.length}
       />
 
@@ -147,10 +168,10 @@ export default function App() {
       <Footer
         onOpenPrivacy={() => setIsPrivacyOpen(true)}
         onOpenModal={handleOpenModal}
-        onOpenLeadsPortal={handleOpenLeadsPortalClick}
+        onOpenLeadsPortal={handleNavigateToAdmin}
       />
 
-      {/* Modals & Drawers */}
+      {/* Modals */}
       <LeadModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
@@ -160,72 +181,14 @@ export default function App() {
         prefilledIndustry={prefilledIndustry}
       />
 
-      <LeadsAdminDrawer
-        isOpen={isLeadsPortalOpen && isAdminAuthed}
-        onClose={handleCloseLeadsPortal}
-        leads={leads}
-        onUpdateLead={handleUpdateLead}
-        onAddLead={(newLead) => setLeads((prev) => [newLead, ...prev])}
-        onClearLeads={handleClearLeads}
-      />
-
-      <AdminAuthModal
-        isOpen={isAdminAuthOpen}
-        onClose={() => setIsAdminAuthOpen(false)}
-        onSuccess={handleAdminAuthSuccess}
-      />
-
       <PrivacyModal
         isOpen={isPrivacyOpen}
         onClose={() => setIsPrivacyOpen(false)}
       />
-
-      {/* Real-time Lead Sync Toast Notification */}
-      {showSyncToast && lastSubmittedLead && (
-        <div className="fixed bottom-20 left-4 right-4 sm:left-8 sm:right-auto sm:max-w-md z-50 bg-slate-900 text-white p-4 rounded-2xl shadow-2xl border border-slate-700 animate-slide-up">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-                <Bell className="w-4 h-4 animate-bounce" />
-              </div>
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-bold text-emerald-400">⚡ 询盘即时联动通知</span>
-                  <span className="text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.2 rounded font-mono">Realtime Sync</span>
-                </div>
-                <p className="text-xs font-semibold text-slate-200 mt-0.5">
-                  收到【{lastSubmittedLead.name}】的询盘表单，已即时同步至管理看板！
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={() => setShowSyncToast(false)}
-              className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-
-          <div className="mt-3 pt-2.5 border-t border-slate-800 flex items-center justify-between text-xs">
-            <span className="text-[11px] text-slate-400 flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
-              独立加密防护
-            </span>
-            <button
-              onClick={() => {
-                setShowSyncToast(false);
-                handleOpenLeadsPortalClick();
-              }}
-              className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg font-bold text-xs transition-colors cursor-pointer flex items-center gap-1"
-            >
-              <span>进入看板</span>
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Floating Contact Sidebar */}
       <ContactSidebar />
     </div>
   );
 }
+

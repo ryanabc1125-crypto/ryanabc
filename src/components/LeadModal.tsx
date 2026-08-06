@@ -3,6 +3,7 @@ import { X, ChevronRight, Check, Sparkles, AlertCircle, ShieldCheck, UserCheck, 
 import confetti from 'canvas-confetti';
 import { BusinessType, ExportMarket, LeadSubmission, PainPoint } from '../types';
 import { Logo } from './Logo';
+import { getBeijingTimeString } from '../utils/timeUtils';
 
 interface LeadModalProps {
   isOpen: boolean;
@@ -86,10 +87,10 @@ export const LeadModal: React.FC<LeadModalProps> = ({
 
     setErrorMsg('');
 
-    // Generate custom AI Strategy
+    // Generate custom AI Strategy for lead record
     const generatedReport = {
       metaInterests: [
-        `${industryCategory} Key Importers`,
+        `${industryCategory || '出海'} Key Importers`,
         `${exportMarket} B2B Trade Buyers`,
         `${businessType} Sourcing Directors`
       ],
@@ -99,14 +100,14 @@ export const LeadModal: React.FC<LeadModalProps> = ({
         'WhatsApp Business Cloud Funnel'
       ],
       monthlyEstimatedInquiries: Math.floor(Math.random() * 45) + 35,
-      recommendedStrategy: `针对【${businessType}】在【${exportMarket}】市场的【${industryCategory}】业务，客番番 AI 系统将自动激活 Meta 核心目标人群画像与精准社群提炼模型，把高意向询盘直接推送至您的 WhatsApp。`
+      recommendedStrategy: `针对【${businessType}】在【${exportMarket}】市场的【${industryCategory || '出海'}】业务，客番番 AI 系统将自动激活 Meta 核心目标人群画像与精准社群提炼模型。`
     };
 
     setAiReport(generatedReport);
 
     const newLead: LeadSubmission = {
       id: `lead-${Date.now()}`,
-      createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      createdAt: getBeijingTimeString(),
       businessType,
       painPoints,
       exportMarket,
@@ -115,6 +116,9 @@ export const LeadModal: React.FC<LeadModalProps> = ({
       demoRequested,
       socialAccount,
       industryCategory,
+      status: '新线索',
+      validityCategory: '待核实',
+      isDeleted: false,
       aiSolutionSummary: generatedReport
     };
 
@@ -445,68 +449,29 @@ export const LeadModal: React.FC<LeadModalProps> = ({
               </div>
             )}
 
-            {/* Step 3: Success Completion Screen */}
+            {/* Step 3: Success Completion Screen (Strictly Private & Discreete) */}
             {step === 3 && (
-              <div className="text-center py-4 space-y-5 animate-fade-in">
+              <div className="text-center py-6 space-y-6 animate-fade-in">
                 <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
                   <Check className="w-8 h-8 stroke-[3]" />
                 </div>
 
-                <div>
-                  <h2 className="text-2xl font-black text-slate-900 mb-2">
-                    提交成功，我们会尽快联系你！
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-black text-slate-900">
+                    提交成功，需求已传输至后端！
                   </h2>
-                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-sm mx-auto bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
-                    我们已收到你的信息，将在 24 小时内与您联系，为你准备适合你行业的自动获客方案。
+                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-md mx-auto bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+                    🔒 <strong className="text-slate-800">隐私绝不透露：</strong> 为严格保护您的企业商业隐私，本前端页面不会在前端保存或公开透露任何提交的表单明细。表单信息已安全加密同步至【客番番后端管理系统】，专属客户顾问将在后台查收并与您对接。
                   </p>
                 </div>
 
-                {/* AI Tailored Strategy Report Card */}
-                {aiReport && (
-                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-left space-y-3">
-                    <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                      <span className="text-xs font-bold text-blue-600 flex items-center gap-1">
-                        <Sparkles className="w-3.5 h-3.5" />
-                        客番番 AI 为您自动匹配的专属获客策略
-                      </span>
-                      <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">
-                        {businessType}
-                      </span>
-                    </div>
-
-                    <p className="text-xs text-slate-700 leading-relaxed font-medium">
-                      {aiReport.recommendedStrategy}
-                    </p>
-
-                    <div className="grid grid-cols-2 gap-2 pt-1 text-[11px]">
-                      <div className="p-2.5 bg-white rounded-xl border border-slate-200">
-                        <span className="text-slate-400 block text-[10px]">Meta 核心属性标签</span>
-                        <span className="font-bold text-slate-800">{aiReport.metaInterests[0]}</span>
-                      </div>
-                      <div className="p-2.5 bg-white rounded-xl border border-slate-200">
-                        <span className="text-slate-400 block text-[10px]">预估月询盘增量</span>
-                        <span className="font-extrabold text-emerald-600">
-                          +{aiReport.monthlyEstimatedInquiries} 条/月
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                <div className="pt-2">
                   <button
                     type="button"
                     onClick={onClose}
                     className="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-md text-sm cursor-pointer"
                   >
                     完成并返回首页
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleReset}
-                    className="w-full border border-slate-200 text-slate-600 py-3.5 rounded-xl font-semibold text-xs hover:bg-slate-50 transition-colors cursor-pointer"
-                  >
-                    再次提交新咨询
                   </button>
                 </div>
               </div>

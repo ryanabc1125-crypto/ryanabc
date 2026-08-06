@@ -12,6 +12,8 @@ export type ExportMarket = '欧洲' | '北美' | '东南亚' | '中东' | '拉�
 export type LeadStatus = '新线索' | 'AI已背调' | 'WA对接中' | '已预约演示' | '已成交';
 export type LeadIntentRating = 'A' | 'B' | 'C';
 
+export type LeadValidityCategory = '待核实' | '有效线索' | '高价值重客' | '无效/垃圾';
+
 export interface LeadSubmission {
   id: string;
   createdAt: string;
@@ -25,6 +27,9 @@ export interface LeadSubmission {
   industryCategory?: string;
   status?: LeadStatus;
   intentRating?: LeadIntentRating;
+  validityCategory?: LeadValidityCategory;
+  isDeleted?: boolean;
+  deletedAt?: string;
   budgetEst?: string;
   notes?: string[];
   assignedAgent?: string;
