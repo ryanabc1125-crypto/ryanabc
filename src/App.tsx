@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Bell, X, ShieldCheck } from 'lucide-react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { Features } from './components/Features';
@@ -79,8 +80,14 @@ export default function App() {
     setIsModalOpen(true);
   };
 
+  // Live notification toast state for lead submission linkage
+  const [lastSubmittedLead, setLastSubmittedLead] = useState<LeadSubmission | null>(null);
+  const [showSyncToast, setShowSyncToast] = useState(false);
+
   const handleSubmitSuccess = (newLead: LeadSubmission) => {
     setLeads((prev) => [newLead, ...prev]);
+    setLastSubmittedLead(newLead);
+    setShowSyncToast(true);
   };
 
   const handleUpdateLead = (updatedLead: LeadSubmission) => {
@@ -132,6 +139,7 @@ export default function App() {
       <Footer
         onOpenPrivacy={() => setIsPrivacyOpen(true)}
         onOpenModal={handleOpenModal}
+        onOpenLeadsPortal={handleOpenLeadsPortalClick}
       />
 
       {/* Modals & Drawers */}
@@ -163,6 +171,50 @@ export default function App() {
         isOpen={isPrivacyOpen}
         onClose={() => setIsPrivacyOpen(false)}
       />
+
+      {/* Real-time Lead Sync Toast Notification */}
+      {showSyncToast && lastSubmittedLead && (
+        <div className="fixed bottom-20 left-4 right-4 sm:left-8 sm:right-auto sm:max-w-md z-50 bg-slate-900 text-white p-4 rounded-2xl shadow-2xl border border-slate-700 animate-slide-up">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                <Bell className="w-4 h-4 animate-bounce" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-emerald-400">⚡ 询盘即时联动通知</span>
+                  <span className="text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.2 rounded font-mono">Realtime Sync</span>
+                </div>
+                <p className="text-xs font-semibold text-slate-200 mt-0.5">
+                  收到【{lastSubmittedLead.name}】的询盘表单，已即时同步至管理看板！
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowSyncToast(false)}
+              className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="mt-3 pt-2.5 border-t border-slate-800 flex items-center justify-between text-xs">
+            <span className="text-[11px] text-slate-400 flex items-center gap-1">
+              <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+              独立加密防护
+            </span>
+            <button
+              onClick={() => {
+                setShowSyncToast(false);
+                handleOpenLeadsPortalClick();
+              }}
+              className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg font-bold text-xs transition-colors cursor-pointer flex items-center gap-1"
+            >
+              <span>进入看板</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Floating Contact Sidebar */}
       <ContactSidebar />

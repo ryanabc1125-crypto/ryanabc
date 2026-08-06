@@ -1,12 +1,11 @@
-export type BusinessType = '工厂' | '外贸团队' | '跨境卖家' | '本地商家';
+export type BusinessType = '工厂 / 生产商' | '外贸团队' | '跨境卖家' | '本地商家' | '其他';
 
 export type PainPoint = 
   | '没客户' 
   | '广告太贵' 
-  | '想自动化获客' 
-  | '缺少外贸运营经验' 
-  | '询盘转化率低' 
-  | '人工回复不及时';
+  | '缺人力 / 没时间' 
+  | 'FB/INS 不会做' 
+  | '想自动化获客';
 
 export type ExportMarket = '欧洲' | '北美' | '东南亚' | '中东' | '拉美' | '全球';
 

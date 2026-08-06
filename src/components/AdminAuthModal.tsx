@@ -22,14 +22,8 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanPwd = password.trim();
-    // Valid security keys: 888888, 13367266284, admin8888, Kefanfan@2026
-    if (
-      cleanPwd === '888888' ||
-      cleanPwd === '13367266284' ||
-      cleanPwd === 'admin8888' ||
-      cleanPwd === 'Kefanfan@2026' ||
-      cleanPwd === 'admin'
-    ) {
+    // Valid security key strictly set to: 1327
+    if (cleanPwd === '1327') {
       setError(false);
       setPassword('');
       setAttempts(0);

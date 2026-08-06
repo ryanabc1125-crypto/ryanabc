@@ -4,9 +4,10 @@ import { Logo } from './Logo';
 interface FooterProps {
   onOpenPrivacy: () => void;
   onOpenModal: () => void;
+  onOpenLeadsPortal?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onOpenPrivacy, onOpenModal }) => {
+export const Footer: React.FC<FooterProps> = ({ onOpenPrivacy, onOpenModal, onOpenLeadsPortal }) => {
   return (
     <footer className="py-12 bg-slate-900 text-white border-t border-slate-800 text-center">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -46,8 +47,18 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPrivacy, onOpenModal }) =>
           <p className="text-slate-500 text-xs italic tracking-widest leading-none">
             Meta Ads Authorized Solution Partner (Concept)
           </p>
-          <p className="text-slate-500 text-xs tracking-tight">
-            Copyright © 2026 whkff.com. All Rights Reserved.
+          <p className="text-slate-500 text-xs tracking-tight flex items-center justify-center gap-1.5">
+            <span>Copyright © 2026 whkff.com. All Rights Reserved.</span>
+            {onOpenLeadsPortal && (
+              <button
+                onClick={onOpenLeadsPortal}
+                className="text-slate-700 hover:text-slate-500 transition-colors cursor-pointer p-0.5 rounded"
+                title="管理员入口"
+                aria-label="Admin Access"
+              >
+                🔒
+              </button>
+            )}
           </p>
         </div>
       </div>

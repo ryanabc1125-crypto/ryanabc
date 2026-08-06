@@ -71,7 +71,7 @@ export const LeadsAdminDrawer: React.FC<LeadsAdminDrawerProps> = ({
   const [addForm, setAddForm] = useState({
     name: '',
     phone: '',
-    businessType: '工厂' as BusinessType,
+    businessType: '工厂 / 生产商' as BusinessType,
     industryCategory: '工业机械与自动化设备',
     exportMarket: '欧洲',
     intentRating: 'A' as LeadIntentRating,
@@ -176,7 +176,7 @@ export const LeadsAdminDrawer: React.FC<LeadsAdminDrawerProps> = ({
       intentRating: addForm.intentRating,
       budgetEst: addForm.budgetEst,
       assignedAgent: 'AI业务助理 #01',
-      painPoints: ['想自动化获客', '询盘转化率低'],
+      painPoints: ['想自动化获客', 'FB/INS 不会做'],
       notes: [`[${new Date().toLocaleString()}] 后台管理员手动录入新增线索`],
       aiSolutionSummary: {
         metaInterests: [addForm.industryCategory, 'B2B Procurement', 'Importers'],
@@ -190,7 +190,7 @@ export const LeadsAdminDrawer: React.FC<LeadsAdminDrawerProps> = ({
     setAddForm({
       name: '',
       phone: '',
-      businessType: '工厂',
+      businessType: '工厂 / 生产商',
       industryCategory: '工业机械与自动化设备',
       exportMarket: '欧洲',
       intentRating: 'A',
@@ -209,11 +209,15 @@ export const LeadsAdminDrawer: React.FC<LeadsAdminDrawerProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-extrabold text-white text-lg">客番番 CRM 智能获客看板</h3>
-                <span className="text-[10px] bg-blue-500/20 text-blue-300 border border-blue-500/30 px-2 py-0.5 rounded-full font-bold">
-                  Live System API v9.4
+                <span className="text-[10px] bg-blue-500/20 text-blue-300 border border-blue-500/30 px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                  表单实时联动 (0.1s)
+                </span>
+                <span className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">
+                  🔒 专属管理员通道
                 </span>
               </div>
-              <p className="text-xs text-slate-400">已集成的咨询线索全生命周期流转与一键 WhatsApp 触达</p>
+              <p className="text-xs text-slate-400">客户前台提交表单后立即全自动更新，有且仅有授权管理员可以访问</p>
             </div>
           </div>
 
@@ -756,10 +760,11 @@ export const LeadsAdminDrawer: React.FC<LeadsAdminDrawerProps> = ({
                     onChange={(e) => setAddForm({ ...addForm, businessType: e.target.value as BusinessType })}
                     className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 outline-none font-bold"
                   >
-                    <option value="工厂">工厂</option>
+                    <option value="工厂 / 生产商">工厂 / 生产商</option>
                     <option value="外贸团队">外贸团队</option>
                     <option value="跨境卖家">跨境卖家</option>
                     <option value="本地商家">本地商家</option>
+                    <option value="其他">其他</option>
                   </select>
                 </div>
 
