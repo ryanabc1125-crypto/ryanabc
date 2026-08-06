@@ -6,6 +6,8 @@ import { Features } from './components/Features';
 import { WorkflowSimulator } from './components/WorkflowSimulator';
 import { RoiCalculator } from './components/RoiCalculator';
 import { CaseStudies } from './components/CaseStudies';
+import { CompetitorComparison } from './components/CompetitorComparison';
+import { AiDiagnosticTool } from './components/AiDiagnosticTool';
 import { LeadModal } from './components/LeadModal';
 import { LeadsAdminDrawer } from './components/LeadsAdminDrawer';
 import { AdminAuthModal } from './components/AdminAuthModal';
@@ -127,6 +129,12 @@ export default function App() {
 
         {/* Workflow Simulator */}
         <WorkflowSimulator />
+
+        {/* Competitor Matrix & Industry Solutions */}
+        <CompetitorComparison onOpenModal={handleOpenModal} />
+
+        {/* AI Lead Diagnostic Quiz Tool */}
+        <AiDiagnosticTool onOpenModal={handleOpenModal} />
 
         {/* ROI Calculator */}
         <RoiCalculator onApplyPreset={handleApplyRoiPreset} />

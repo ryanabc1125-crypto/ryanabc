@@ -15,18 +15,18 @@ export const Hero: React.FC<HeroProps> = ({ onOpenModal, onScrollToCalculator })
       {/* Pill Badge */}
       <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 border border-blue-200/80 text-blue-700 rounded-full text-xs sm:text-sm font-semibold mb-6 shadow-xs animate-bounce-short">
         <Sparkles className="w-4 h-4 text-blue-600" />
-        <span>AI 驱动的全球客户开发系统</span>
+        <span>客番番【订制推】· 外贸 Meta 智能获客系统</span>
       </div>
 
       {/* Headline */}
       <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold mb-8 tracking-tight text-slate-900 leading-tight">
-        告别传统获客，<br className="hidden sm:inline" />
-        开启 <span className="gradient-text">FB/INS 自动化询盘</span> 时代
+        告别传统低效获客，<br className="hidden sm:inline" />
+        开启 <span className="gradient-text">客番番 FB/INS 订制推</span> 时代
       </h1>
 
       {/* Subtitle */}
       <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
-        专为外贸企业打造的自动获客引擎。根据你的行业属性，量身定制 FB/INS 营销闭环，让询盘主动找上门。
+        专为外贸出口工厂与跨境商家打造。集指纹云环境隔离、Meta 精准引流、RPA 全网截流与 WhatsApp CRM 归集于一体，让真实买家主动找上门。
       </p>
 
       {/* Action Buttons */}
